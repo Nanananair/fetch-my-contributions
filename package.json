@@ -1,0 +1,38 @@
+{
+  "name": "fetch-my-contributions",
+  "version": "0.1.0",
+  "description": "Local-first CLI that turns your GitHub activity into a markdown work summary for 1:1s and review cycles.",
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
+  "bin": {
+    "fmc": "dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "prompts"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx src/cli.ts",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@inquirer/prompts": "^7.2.0",
+    "better-sqlite3": "^12.2.0",
+    "commander": "^14.0.0",
+    "octokit": "^5.0.3",
+    "openai": "^6.0.0",
+    "zod": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/node": "^24.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0",
+    "vitest": "^3.0.0"
+  }
+}
