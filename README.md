@@ -175,7 +175,8 @@ Created on first run:
 - **models** — OpenRouter model per task; swap freely without touching code.
   `fallback` is used when the primary model is unavailable.
 - **denylist** — repos that must never be fetched or included in a report:
-  `"owner/repo"` exact or `"owner/*"` wildcard.
+  `"owner/repo"` exact, `"owner/*"`, or simple `*` globs within the owner or
+  repo segment such as `"owner/secret-*"` and `"*/repo-name"`.
 
 ## Privacy & what leaves your machine
 
