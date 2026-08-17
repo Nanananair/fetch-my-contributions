@@ -1,5 +1,8 @@
 node_modules/
 dist/
 /report-*.md
+/resume-bullets-*.md
+/linkedin-post-*.md
+/work-history-*.md
 *.log
 .DS_Store

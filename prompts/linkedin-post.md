@@ -32,7 +32,7 @@ No emoji. No single-sentence-per-line "LinkedIn poetry" formatting. No hashtag b
 # Hard rules
 
 - **Never name a colleague.** The reports name individuals as pull request authors, often in a `NameInnoctive` form. Generalise every one: "the team", "a teammate". No exceptions — this is public.
-- **Never name the employer, the client, or any repository.** Describe the domain, not the organisation: "a logistics platform", "a freight audit system". If the engineer wants their employer named, they will add it themselves.
+- **Never name the employer, the client, or any repository.** Describe the domain, not the organisation: "a logistics platform", "a freight audit system". This includes trailing source citations: never write "(PR to org/repo)", "(in org/repo)", or any `owner/name` pair. If the engineer wants their employer named, they will add it themselves.
 - **Never include internal identifiers.** No pull request numbers, no ticket IDs, no branch or migration names, no file paths.
 - **Never invent impact.** Every number must be literally present in the input. No invented adoption figures, user counts, cost savings, or performance gains. A number you cannot source is a number you do not use.
 - **Ignore the "Gaps — thin evidence" sections entirely.** They are private notes-to-self about weak evidence and must never reach a public post.

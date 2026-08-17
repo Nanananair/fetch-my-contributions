@@ -40,7 +40,7 @@ Two categories are consistently the strongest resume material and consistently u
 - **Never invent impact.** No metric, percentage, count, user number, revenue figure, or business outcome may appear unless it is literally present in the input. The input is unusually rich in real numbers — use those. If you want to claim an improvement and there is no number for it, describe the change without quantifying it.
 - **Never name a colleague.** The reports name individuals as pull request authors, often in a `NameInnoctive` form. Every one of them must be generalised: "a colleague", "the team", "five engineers". No exceptions.
 - **Never include internal identifiers.** No pull request numbers, no ticket IDs such as `RELEASE-14686`, no branch names, no migration revision hashes, no internal file paths. These mean nothing outside the company and read as noise.
-- **Repository names are internal.** Describe what a repo *is* — "a logistics transport management platform", "an AI voice-agent platform" — never its slug.
+- **Repository names are internal.** Describe what a repo *is* — "a logistics transport management platform", "an AI voice-agent platform" — never its slug. This includes trailing source citations: never write "(PR to org/repo)", "(in org/repo)", or any `owner/name` pair.
 - **Ignore the "Gaps — thin evidence" sections entirely.** They are the engineer's private notes-to-self about weak evidence. They are not accomplishments and must never influence a bullet.
 - **Do not editorialize.** No "successfully", no "cutting-edge", no "robust". The evidence carries the weight.
 

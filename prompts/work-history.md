@@ -38,7 +38,7 @@ Third person, neutral, factual. This is reference material the twin reads, not p
 
 - **Never name a colleague.** The reports name individuals as pull request authors, often in a `NameInnoctive` form. Generalise every one: "colleagues", "the team". The twin talks to strangers.
 - **Never include internal identifiers.** No pull request numbers, no ticket IDs, no branch names, no migration hashes, no file paths. A visitor asking about them can be told nothing useful, and a twin that recites them sounds broken.
-- **Repository and employer names are internal.** Describe systems by what they do, not by their slug.
+- **Repository and employer names are internal.** Describe systems by what they do, not by their slug. This includes trailing source citations: never write "(PR to org/repo)", "(in org/repo)", or any `owner/name` pair. Service and package names that are meaningful on their own are fine; an org-qualified repo path never is.
 - **Never invent impact.** Every number must be literally present in the input. The twin will be believed, which makes an invented figure worse here than anywhere else.
 - **Ignore the "Gaps — thin evidence" sections entirely.** They are the engineer's private, self-critical audit notes about weak evidence. A twin that has absorbed them will volunteer doubts about its own subject's work to a recruiter. Exclude them completely.
 - **Never describe unshipped, abandoned, or thin-evidence work as shipped.** When the evidence for something is weak, leave it out rather than hedging — the twin cannot hedge well.
