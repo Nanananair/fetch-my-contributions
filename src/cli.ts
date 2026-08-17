@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import fs from "node:fs";
 import { Command } from "commander";
 import { GitHubAdapter } from "./adapters/github/index.js";
 import { resolveAuth } from "./auth.js";
@@ -6,6 +7,7 @@ import { isDenylisted, loadConfig } from "./config.js";
 import { Db } from "./db.js";
 import { dbPath, ensureDirs } from "./paths.js";
 import { runCheckin } from "./commands/checkin.js";
+import { FORMATS, runDistill, type Format } from "./commands/distill.js";
 import { runReport } from "./commands/report.js";
 import { runSync } from "./commands/sync.js";
 
@@ -33,6 +35,14 @@ function parseQuarter(value: string): { since: Date; until: Date } {
     since: new Date(Date.UTC(year, (q - 1) * 3, 1)),
     until: new Date(Date.UTC(year, q * 3, 1) - 1),
   };
+}
+
+/** report-*.md in cwd, sorted so the distilled window reads oldest-first. */
+function defaultReportFiles(): string[] {
+  return fs
+    .readdirSync(process.cwd())
+    .filter((f) => /^report-.*\.md$/.test(f))
+    .sort();
 }
 
 function openDb(): Db {
@@ -136,6 +146,59 @@ program
     } finally {
       db.close();
     }
+  });
+
+program
+  .command("distill")
+  .description(
+    "Turn generated reports into resume bullets, a LinkedIn post, or a work history"
+  )
+  .argument(
+    "[files...]",
+    "report files (default: report-*.md in the current directory)"
+  )
+  .requiredOption(
+    "--format <format>",
+    `output: ${Object.keys(FORMATS).join(" | ")}`
+  )
+  .option("--role <role>", "target role, for resume-bullets")
+  .option("--theme <theme>", "post subject, for linkedin-post")
+  .option("--out <file>", 'output file, or "-" for stdout')
+  .option(
+    "--dry-run",
+    "print exactly what would be sent to the LLM, send nothing",
+    false
+  )
+  .action(async (
+    files: string[],
+    opts: {
+      format: string;
+      role?: string;
+      theme?: string;
+      out?: string;
+      dryRun: boolean;
+    }
+  ) => {
+    if (!(opts.format in FORMATS)) {
+      throw new Error(
+        `Unknown --format "${opts.format}". Expected one of: ${Object.keys(FORMATS).join(", ")}.`
+      );
+    }
+    const resolved = files.length > 0 ? files : defaultReportFiles();
+    if (resolved.length === 0) {
+      throw new Error(
+        "No report files found in the current directory. Run `fmc report` first, or pass files explicitly."
+      );
+    }
+    await runDistill({
+      config: loadConfig(),
+      format: opts.format as Format,
+      files: resolved,
+      role: opts.role,
+      theme: opts.theme,
+      out: opts.out,
+      dryRun: opts.dryRun,
+    });
   });
 
 program

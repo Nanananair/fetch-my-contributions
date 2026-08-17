@@ -4,9 +4,12 @@ Local-first CLI that turns your real GitHub activity — commits, PRs, and the
 reviews you leave on other people's PRs, private repos included — into a
 markdown work summary you can bring to 1:1s and review cycles.
 
+Then turns those summaries into resume bullets, a LinkedIn post, or a work
+history for a chatbot — `fmc distill`.
+
 Everything runs on your machine. No server, no accounts, no telemetry. The
-only thing that ever leaves your machine is the report prompt sent to
-OpenRouter, and that is logged verbatim before it goes.
+only thing that ever leaves your machine is the prompt sent to OpenRouter by
+`report` or `distill`, and that is logged verbatim before it goes.
 
 ## Setup
 
@@ -57,6 +60,19 @@ done
 ```sh
 fmc report --quarter 2026Q2 --only 'myorg/*'        --out work-q2.md
 fmc report --quarter 2026Q2 --only 'mypersonal/*'   --out personal-q2.md
+```
+
+**Turn a year of reports into resume bullets** — themed across quarters, not
+one bullet per quarter:
+
+```sh
+fmc distill --format resume-bullets --role 'Engineering Manager'
+```
+
+**Feed a chatbot or personal site** with a distilled work history:
+
+```sh
+fmc distill --format work-history --out ../my-site/work-history.md
 ```
 
 **See exactly what would be sent before spending anything:**
@@ -150,6 +166,44 @@ kept.
 `--dry-run` prints the exact prompt and sends nothing — use it to review what
 would leave your machine.
 
+### `fmc distill --format <format> [files...] [--role <role>] [--theme <theme>] [--out <file>] [--dry-run]`
+
+Turns the reports you've already generated into something outward-facing:
+
+| `--format` | Output |
+| --- | --- |
+| `resume-bullets` | 6–10 themed resume bullets. `--role` targets them. |
+| `linkedin-post` | One 150–250 word post. `--theme` picks the subject. |
+| `work-history` | Reference doc for a chatbot or personal site. |
+
+Reads generated `report-*.md` files, not the database — so it composes with
+whatever you've already produced. With no files it picks up `report-*.md` in
+the current directory and derives the window from their filenames. `--out -`
+writes to stdout.
+
+The point of this command is the **quarter → theme** transform: a system built
+across three quarters becomes one bullet describing the finished system at its
+full scale, not three bullets describing three quarters of progress.
+
+Two rules matter more here than in `report`, because the output is public:
+
+- **Colleague names, repo names, PR numbers, and ticket IDs are stripped.**
+  Your reports name PR authors and internal identifiers; none of that belongs
+  in a resume or a post.
+- **The "Gaps — thin evidence" sections never reach the model.** They are
+  private notes-to-self about weak evidence ("was this abandoned?"). The
+  prompts forbid using them *and* the command strips them before sending —
+  the same filter-twice rule the denylist follows.
+
+The no-invented-impact rule carries over: numbers appear only if they are
+literally in the reports.
+
+```sh
+fmc distill --format resume-bullets --role 'Staff Engineer' --dry-run | less
+fmc distill --format linkedin-post --theme 'shipping a voice-agent platform' \
+  report-2026-07-01-2026-09-30.md --out -
+```
+
 ### `fmc check-in`
 
 Weekly interactive prompt. For each thread active since your last check-in it
@@ -166,6 +220,7 @@ Created on first run:
   "models": {
     "report":   "anthropic/claude-sonnet-4.5",
     "resolve":  "google/gemini-2.5-flash",
+    "distill":  "anthropic/claude-sonnet-4.5",
     "fallback": "openai/gpt-4o-mini"
   },
   "denylist": []
@@ -184,7 +239,9 @@ Commit messages from private repos are sensitive, so egress is explicit:
 - Before any LLM call the CLI prints how many threads/events/repos are in the
   payload, and writes the exact payload to `~/.fmc/logs/egress-<ts>.txt`.
 - Every call's token usage and dollar cost is appended to
-  `~/.fmc/logs/usage.jsonl` and printed after each report.
+  `~/.fmc/logs/usage.jsonl` and printed after each report or distill.
+- `distill` additionally strips the private "Gaps — thin evidence" sections
+  from reports before they reach a prompt.
 - `sync` and `check-in` never call the LLM at all.
 - Secrets come from `gh` or the environment only; nothing is persisted.
 

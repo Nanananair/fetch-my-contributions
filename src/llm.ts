@@ -4,7 +4,7 @@ import type { Config } from "./config.js";
 import { logEgress, logUsage } from "./log.js";
 
 export interface CompleteOptions {
-  task: "report" | "resolve";
+  task: "report" | "resolve" | "distill";
   maxTokens?: number;
 }
 

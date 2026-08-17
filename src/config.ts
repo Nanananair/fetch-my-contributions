@@ -7,6 +7,7 @@ const ConfigSchema = z.object({
     .object({
       report: z.string().default("anthropic/claude-sonnet-4.5"),
       resolve: z.string().default("google/gemini-2.5-flash"),
+      distill: z.string().default("anthropic/claude-sonnet-4.5"),
       fallback: z.string().default("openai/gpt-4o-mini"),
     })
     .prefault({}),
