@@ -11,7 +11,7 @@ const ConfigSchema = z.object({
       fallback: z.string().default("openai/gpt-4o-mini"),
     })
     .prefault({}),
-  // "owner/repo" exact, or "owner/*" wildcard. Filters both fetching and report egress.
+  // "owner/repo" exact, or simple "*" globs. Filters both fetching and report egress.
   denylist: z.array(z.string()).default([]),
 });
 
@@ -38,10 +38,14 @@ export function loadConfig(): Config {
   return parsed.data;
 }
 
-/** Patterns are "owner/repo" exact or "owner/*" wildcard. */
+function globToRegExp(pattern: string): RegExp {
+  const escaped = pattern.replace(/[.+?^${}()|[\]\\]/g, "\\$&").replaceAll("*", "[^/]*");
+  return new RegExp(`^${escaped}$`);
+}
+
+/** Patterns are "owner/repo" exact or simple "*" globs within either segment. */
 export function repoMatches(repo: string, patterns: string[]): boolean {
-  const owner = repo.split("/")[0];
-  return patterns.some((entry) => entry === repo || entry === `${owner}/*`);
+  return patterns.some((entry) => entry === repo || globToRegExp(entry).test(repo));
 }
 
 export function isDenylisted(repo: string | null, denylist: string[]): boolean {
