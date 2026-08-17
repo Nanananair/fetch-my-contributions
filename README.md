@@ -22,6 +22,77 @@ fmc sync && fmc report --since 2026-05-01
 `gh` CLI isn't installed. Tokens are read per run and never written to disk.
 GitHub Enterprise hosts that `gh` is logged into are picked up automatically.
 
+## Usage examples
+
+**First run and backfill.** The first sync looks back 90 days; backfill a full
+year once, then let the cursor take over:
+
+```sh
+fmc sync --since 2025-08-17     # one-time backfill (minutes, on a busy org account)
+fmc sync                        # every run after: seconds, fetches only what's new
+```
+
+**Weekly rhythm** — keep the data fresh and capture what the data can't show:
+
+```sh
+fmc sync && fmc check-in
+```
+
+**Prep for a 1:1** — last two weeks, work repos only:
+
+```sh
+fmc report --since 2026-08-04 --only 'myorg/*' --out 1on1.md
+```
+
+**Prep for a review cycle** — one report per quarter, scoped to your org:
+
+```sh
+for q in 2025Q4 2026Q1 2026Q2 2026Q3; do
+  fmc report --quarter $q --only 'myorg/*'
+done
+```
+
+**Separate work and personal summaries** from the same synced data:
+
+```sh
+fmc report --quarter 2026Q2 --only 'myorg/*'        --out work-q2.md
+fmc report --quarter 2026Q2 --only 'mypersonal/*'   --out personal-q2.md
+```
+
+**See exactly what would be sent before spending anything:**
+
+```sh
+fmc report --quarter 2026Q2 --only 'myorg/*' --dry-run | less
+```
+
+**Multiple GitHub accounts** (e.g. work + personal on github.com): `fmc sync`
+uses gh's *active* account, and each account keeps its own sync cursor. Either
+switch, or scope a single run with an env token:
+
+```sh
+gh auth switch --user my-personal-account && fmc sync
+# or, without touching gh state:
+GH_TOKEN=$(gh auth token --user my-personal-account) fmc sync
+```
+
+**Audit why events were grouped** into a thread (and tune the heuristics):
+
+```sh
+sqlite3 ~/.fmc/data.db \
+  "SELECT t.title, l.confidence, l.reason FROM links l
+   JOIN threads t ON t.id = l.thread_id ORDER BY t.last_seen DESC LIMIT 20"
+```
+
+**Check what a report actually cost:**
+
+```sh
+tail -3 ~/.fmc/logs/usage.jsonl
+```
+
+**Keep a sensitive repo out of everything** — add it to the denylist in
+`~/.fmc/config.json` (`"denylist": ["myorg/secret-repo"]` or `"client/*"`);
+it is neither fetched nor ever included in a report prompt.
+
 ## Commands
 
 ### `fmc sync [--since <date>]`
